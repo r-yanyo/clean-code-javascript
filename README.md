@@ -478,8 +478,7 @@ different things with just one function/module/class.
 
 しばしば、共有点が多いにも関わらず、2つ以上のわずかに異なる部分があるために、重複したコードを持つことがあります。
 しかしその違いによって、ほとんど同じことを行う2つ以上の別々の関数が必要になります。
-重複したコードを削除する意味は、これらを処理することができる別々の1つの関数/モジュール/クラスの抽象化を作るということです。
-Removing duplicate code means creating an abstraction that can handle this set of different things with just one function/module/class.うーん
+重複したコードを削除するということは、関数/モジュール/クラスを1つだけ利用して、これらのわずかにを異なる一連のものを処理することができる抽象化を作るということを意味します。
 
 Getting the abstraction right is critical, that's why you should follow the
 SOLID principles laid out in the *Classes* section. Bad abstractions can be
@@ -489,7 +488,7 @@ updating multiple places anytime you want to change one thing.
 
 抽象化を正しく行うことが重要です。そのため、*クラス* セクションで説明されているSOLIDの原則に従う必要があります。
 悪い抽象化は、重複コードより悪い可能性があります、注意深くしましょう！
-Having said this, もし良い抽象化ができるのであれば、それをやってください！
+少し難しいことではありますが、もし良い抽象化ができるのであればそれをやってください！
 自分自身を繰り返さないこと。そうしなければ、1つの場所を変更したいときはいつでも、複数の場所を変更することになります。
 
 **Bad:**
@@ -642,7 +641,7 @@ modifying some global variable, or accidentally wiring all your money to a
 stranger.
 
 関数が、値を受け取り何か他の値を返す以外のことを行う場合、副作用を引き起こします。
-副作用とは、ファイルを書き込みしたり、なにかのグローバル変数を書き換えたり、誤ってあなたの全てのお金を見知らぬ人にwiringするようなものです。
+副作用とは、ファイルを書き込みしたり、なにかのグローバル変数を書き換えたり、誤ってあなたの全てのお金を見知らぬ人に振込みするようなものです。
 
 Now, you do need to have side effects in a program on occasion. Like the previous
 example, you might need to write to a file. What you want to do is to
@@ -650,7 +649,6 @@ centralize where you are doing this. Don't have several functions and classes
 that write to a particular file. Have one service that does it. One and only one.
 
 時には、副作用を持つプログラムを必要とします。少し前に例で挙げた、ファイルに書き込みしなければならない場合のように。
-What you want to do is to centralize where you are doing this.（なんかやるべきことのニュアンスが。。。）
 あなたがしたいことは、どこでこれを行うかを集中させることです。
 ファイルを部分的に書き換えするような、関数やクラスをいくつも持たないでください。
 それを行う1つのサービスを持ってください。1つ、1だけです。
@@ -721,9 +719,7 @@ item.
 ユーザーが購入ボタンをクリックすると、`purchase`関数を呼び出し、その関数はネットワークリクエストを生成して、その`cart`配列をサーバーへ送信します。
 しかし、ネットワーク接続が悪いために、`purchase`関数はリクエストを繰り返し送信し続けなければならない。
 
-Now, what if in the meantime the user accidentally clicks "Add to Cart"
-button on an item they don't actually want before the network request begins?
-仮に、その間にユーザーがうっかり"カートに追加する"ボタンを
+ユーザーが、ネットワークリクエストが始まる前に欲しいとは思っていない商品の"カートに追加する"ボタンをうっかりクリックしてしまった場合。
 もしそれが起こって、ネットワークリクエストが始まった場合、その時、そのpurchase関数は間違って追加された商品を送信してしまいます。
 なぜなら、その関数は`addItemToCart`によって望んでいない商品を追加され、変更されてしまったショッピングカート配列を参照しているからです。
 
@@ -813,8 +809,7 @@ JavaScript isn't a functional language in the way that Haskell is, but it has
 a functional flavor to it. Functional languages are cleaner and easier to test.
 Favor this style of programming when you can.
 
-JavaScriptは、Haskellがやっているような関数型言語ではありません。but it has
-a functional flavor to it.(関数型のような味わいがあります。。。かな？)
+JavaScriptは、Haskellがやっているような関数型言語ではありませんが、部分的にその機能があります。
 関数型言語は簡潔で用意にテストすることができます。あなたができる時は、このプログラミングスタイルを優先してください。
 
 **Bad:**
@@ -1196,6 +1191,7 @@ account.setBalance(100);
 ### Make objects have private members
 ### オブジェクトはプライベートなメンバーを持つようにする
 This can be accomplished through closures (for ES5 and below).
+
 これはグロージャによって達成することができます。（ES5以前の場合）
 
 **Bad:**
