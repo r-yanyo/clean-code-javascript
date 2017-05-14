@@ -341,13 +341,13 @@ function emailClients(clients) {
 
 **Good:**
 ```javascript
-function emailClients(clients) {
+function emailActiveClients(clients) {
   clients
-    .filter(isClientActive)
+    .filter(isActiveClient)
     .forEach(email);
 }
 
-function isClientActive(client) {
+function isActiveClient(client) {
   const clientRecord = database.lookup(client);
   return clientRecord.isActive();
 }
@@ -532,10 +532,14 @@ function showEmployeeList(employees) {
     const expectedSalary = employee.calculateExpectedSalary();
     const experience = employee.getExperience();
 
-    let portfolio = employee.getGithubLink();
-
-    if (employee.type === 'manager') {
-      portfolio = employee.getMBAProjects();
+    let portfolio;
+    switch (employee.type) {
+      case 'manager':
+        portfolio = employee.getMBAProjects();
+        break;
+      case 'developer':
+        portfolio = employee.getGithubLink();
+        break;
     }
 
     const data = {
@@ -732,7 +736,7 @@ holding onto a reference of the shopping cart will be affected by any changes.
 
 Two caveats to mention to this approach:
   1. There might be cases where you actually want to modify the input object,
-but when you adopt this programming practice you will find that those case
+but when you adopt this programming practice you will find that those cases
 are pretty rare. Most things can be refactored to have no side effects!
 
   2. Cloning big objects can be very expensive in terms of performance. Luckily,
