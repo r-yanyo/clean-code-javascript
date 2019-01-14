@@ -88,7 +88,7 @@ setTimeout(blastOff, 86400000);
 
 **Good:**
 ```javascript
-// Declare them as capitalized `const` globals.
+// Declare them as capitalized named constants.
 const MILLISECONDS_IN_A_DAY = 86400000;
 
 setTimeout(blastOff, MILLISECONDS_IN_A_DAY);
@@ -192,7 +192,7 @@ function createMicrobrewery(name) {
 
 **Good:**
 ```javascript
-function createMicrobrewery(breweryName = 'Hipster Brew Co.') {
+function createMicrobrewery(name = 'Hipster Brew Co.') {
   // ...
 }
 
@@ -272,13 +272,13 @@ function emailClients(clients) {
 
 **Good:**
 ```javascript
-function emailClients(clients) {
+function emailActiveClients(clients) {
   clients
-    .filter(isClientActive)
+    .filter(isActiveClient)
     .forEach(email);
 }
 
-function isClientActive(client) {
+function isActiveClient(client) {
   const clientRecord = database.lookup(client);
   return clientRecord.isActive();
 }
@@ -295,7 +295,7 @@ function addToDate(date, month) {
 
 const date = new Date();
 
-// It's hard to to tell from the function name what is added
+// It's hard to tell from the function name what is added
 addToDate(date, 1);
 ```
 
@@ -343,6 +343,14 @@ function parseBetterJSAlternative(code) {
 
 **Good:**
 ```javascript
+function parseBetterJSAlternative(code) {
+  const tokens = tokenize(code);
+  const ast = lexer(tokens);
+  ast.forEach((node) => {
+    // parse...
+  });
+}
+
 function tokenize(code) {
   const REGEXES = [
     // ...
@@ -366,14 +374,6 @@ function lexer(tokens) {
   });
 
   return ast;
-}
-
-function parseBetterJSAlternative(code) {
-  const tokens = tokenize(code);
-  const ast = lexer(tokens);
-  ast.forEach((node) => {
-    // parse...
-  });
 }
 ```
 **[⬆ back to top](#table-of-contents)**
@@ -440,17 +440,19 @@ function showEmployeeList(employees) {
     const expectedSalary = employee.calculateExpectedSalary();
     const experience = employee.getExperience();
 
-    let portfolio = employee.getGithubLink();
-
-    if (employee.type === 'manager') {
-      portfolio = employee.getMBAProjects();
-    }
-
     const data = {
       expectedSalary,
-      experience,
-      portfolio
+      experience
     };
+
+    switch (employee.type) {
+      case 'manager':
+        data.portfolio = employee.getMBAProjects();
+        break;
+      case 'developer':
+        data.githubLink = employee.getGithubLink();
+        break;
+    }
 
     render(data);
   });
@@ -600,7 +602,7 @@ holding onto a reference of the shopping cart will be affected by any changes.
 
 Two caveats to mention to this approach:
   1. There might be cases where you actually want to modify the input object,
-but when you adopt this programming practice you will find that those case
+but when you adopt this programming practice you will find that those cases
 are pretty rare. Most things can be refactored to have no side effects!
 
   2. Cloning big objects can be very expensive in terms of performance. Luckily,
@@ -619,7 +621,7 @@ const addItemToCart = (cart, item) => {
 **Good:**
 ```javascript
 const addItemToCart = (cart, item) => {
-  return [...cart, { item, date : Date.now() }];
+  return [...cart, { item, date: Date.now() }];
 };
 ```
 
@@ -657,7 +659,7 @@ class SuperArray extends Array {
 
 ### Favor functional programming over imperative programming
 JavaScript isn't a functional language in the way that Haskell is, but it has
-a functional flavor to it. Functional languages are cleaner and easier to test.
+a functional flavor to it. Functional languages can be cleaner and easier to test.
 Favor this style of programming when you can.
 
 **Bad:**
@@ -703,11 +705,9 @@ const programmerOutput = [
   }
 ];
 
-const INITIAL_VALUE = 0;
-
 const totalOutput = programmerOutput
-  .map((programmer) => programmer.linesOfCode)
-  .reduce((acc, linesOfCode) => acc + linesOfCode, INITIAL_VALUE);
+  .map(output => output.linesOfCode)
+  .reduce((totalLines, lines) => totalLines + lines);
 ```
 **[⬆ back to top](#table-of-contents)**
 
@@ -839,7 +839,7 @@ function travelToTexas(vehicle) {
 **[⬆ back to top](#table-of-contents)**
 
 ### Avoid type-checking (part 2)
-If you are working with basic primitive values like strings, integers, and arrays,
+If you are working with basic primitive values like strings and integers,
 and you can't use polymorphism but you still feel the need to type-check,
 you should consider using TypeScript. It is an excellent alternative to normal
 JavaScript, as it provides you with static typing on top of standard JavaScript
@@ -1110,10 +1110,10 @@ and you can chain further class methods onto it.
 **Bad:**
 ```javascript
 class Car {
-  constructor() {
-    this.make = 'Honda';
-    this.model = 'Accord';
-    this.color = 'white';
+  constructor(make, model, color) {
+    this.make = make;
+    this.model = model;
+    this.color = color;
   }
 
   setMake(make) {
@@ -1133,20 +1133,18 @@ class Car {
   }
 }
 
-const car = new Car();
+const car = new Car('Ford','F-150','red');
 car.setColor('pink');
-car.setMake('Ford');
-car.setModel('F-150');
 car.save();
 ```
 
 **Good:**
 ```javascript
 class Car {
-  constructor() {
-    this.make = 'Honda';
-    this.model = 'Accord';
-    this.color = 'white';
+  constructor(make, model, color) {
+    this.make = make;
+    this.model = model;
+    this.color = color;
   }
 
   setMake(make) {
@@ -1174,10 +1172,8 @@ class Car {
   }
 }
 
-const car = new Car()
+const car = new Car('Ford','F-150','red')
   .setColor('pink')
-  .setMake('Ford')
-  .setModel('F-150')
   .save();
 ```
 **[⬆ back to top](#table-of-contents)**
@@ -1687,7 +1683,7 @@ you achieve very high confidence and developer peace of mind. This means that
 in addition to having a great testing framework, you also need to use a
 [good coverage tool](http://gotwarlost.github.io/istanbul/).
 
-There's no excuse to not write tests. There's [plenty of good JS test frameworks](http://jstherightway.org/#testing-tools), so find one that your team prefers.
+There's no excuse to not write tests. There are [plenty of good JS test frameworks](http://jstherightway.org/#testing-tools), so find one that your team prefers.
 When you find one that works for your team, then aim to always write tests
 for every new feature/module you introduce. If your preferred method is
 Test Driven Development (TDD), that is great, but the main point is to just
@@ -1941,8 +1937,8 @@ class Alpaca {}
 const DAYS_IN_WEEK = 7;
 const DAYS_IN_MONTH = 30;
 
-const songs = ['Back In Black', 'Stairway to Heaven', 'Hey Jude'];
-const artists = ['ACDC', 'Led Zeppelin', 'The Beatles'];
+const SONGS = ['Back In Black', 'Stairway to Heaven', 'Hey Jude'];
+const ARTISTS = ['ACDC', 'Led Zeppelin', 'The Beatles'];
 
 function eraseDatabase() {}
 function restoreDatabase() {}
@@ -2170,9 +2166,15 @@ This is also available in other languages:
     - [beginor/clean-code-javascript](https://github.com/beginor/clean-code-javascript)
   - ![de](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Germany.png) **German**: [marcbruederlin/clean-code-javascript](https://github.com/marcbruederlin/clean-code-javascript)
   - ![kr](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/South-Korea.png) **Korean**: [qkraudghgh/clean-code-javascript-ko](https://github.com/qkraudghgh/clean-code-javascript-ko)
+  - ![pl](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Poland.png) **Polish**: [greg-dev/clean-code-javascript-pl](https://github.com/greg-dev/clean-code-javascript-pl)
   - ![ru](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Russia.png) **Russian**:
     - [BoryaMogila/clean-code-javascript-ru/](https://github.com/BoryaMogila/clean-code-javascript-ru/)
     - [maksugr/clean-code-javascript](https://github.com/maksugr/clean-code-javascript)
   - ![vi](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Vietnam.png) **Vietnamese**: [hienvd/clean-code-javascript/](https://github.com/hienvd/clean-code-javascript/)
+  - ![ja](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Japan.png) **Japanese**: [mitsuruog/clean-code-javascript/](https://github.com/mitsuruog/clean-code-javascript/)
+  - ![id](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Indonesia.png) **Indonesia**:
+  [andirkh/clean-code-javascript/](https://github.com/andirkh/clean-code-javascript/)
+  - ![it](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Italy.png) **Italian**:
+  [frappacchio/clean-code-javascript/](https://github.com/frappacchio/clean-code-javascript/)
 
 **[⬆ back to top](#table-of-contents)**
